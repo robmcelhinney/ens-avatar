@@ -11,6 +11,7 @@ import axios from 'axios'
 function Homepage() {
     const [imageObject, setImageObject] = useState(null)
     const [nfts, setNFTs] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
 
     const [accountInfo] = useGlobalState("accountInfo")
 
@@ -27,8 +28,11 @@ function Homepage() {
 
     useEffect(() => {
         const getNFTasync = async () => {
+            setNFTs(null)
+            setIsLoading(true)
             const {nfts} = await getNFTs()
             setNFTs(nfts)
+            setIsLoading(false)
         }
         getNFTasync()
     }, [address])
@@ -135,6 +139,21 @@ function Homepage() {
         ENSContract.setText(node, "avatar", myNFT)
     }
 
+    const spinner = () => {
+        if (isLoading) {
+            return (
+                <div className="flex justify-center items-center h-3/6">
+                    <div className="grid gap-2">
+                        <div className="flex items-center justify-center ">
+                            <div className="w-16 h-16 border-b-2 border-gray-400 rounded-full animate-spin"></div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        return <></>
+    }
+
     return (
         <div>
             <div className="text-3xl font-bold underline">ENS Avatar Updater</div>
@@ -142,6 +161,7 @@ function Homepage() {
             {showAvatar()}
             {installWallet()}
             {updateAvatar()}
+            {spinner()}
             {showNFTs()}
 
         </div>
