@@ -1,8 +1,5 @@
 # ENS Avatar | Set ENS Avatar from selecting owned NFTs
 
-Viewable at [https://robmcelhinney.com/ensavatar](
-https://robmcelhinney.com/ensavatar)
-
 ## Install
 
     $ git clone git@github.com:robmcelhinney/ens-avatar.git
