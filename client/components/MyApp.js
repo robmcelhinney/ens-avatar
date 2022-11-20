@@ -1,6 +1,5 @@
-import React from 'react'
 import { useConnect } from '../hooks/useConnect'
-import Homepage from './Homepage'
+import Homepage from '../pages/Homepage'
 
 export const MyApp = () => {
 

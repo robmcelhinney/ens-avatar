@@ -1,6 +1,6 @@
 import React from 'react'
 import 'tailwindcss/tailwind.css'
-import { MyApp } from './MyApp'
+import { MyApp } from '../components/MyApp'
 import { GlobalStateProvider, initialGlobalState } from '../state/GlobalStateContext'
 import { globalStateReducer } from '../state/GlobalState'
 
