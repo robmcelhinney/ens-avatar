@@ -14,11 +14,11 @@ export const useConnect = () => {
     useEffect(() => {
         const connect = async () => {
             if (typeof window !== 'undefined') {
-                const initAccountChangeListener = (web3provider) => {
+                const initAccountChangeListener = (web3provider, signer) => {
                     window.ethereum.on('accountsChanged', async (accounts) => {
                         const address = accounts[0]
                         const {ensName, ensAvatar} = await getAccountInfo(address, web3provider)
-                        setAccountInfo((prevState) => ({ ...prevState, address, ensName, ensAvatar}))
+                        setAccountInfo(() => ({ web3provider, signer, address, ensName, ensAvatar}))
                     })
                 }
 
@@ -32,7 +32,7 @@ export const useConnect = () => {
                         const {ensName, ensAvatar} = await getAccountInfo(address, web3provider)
 
                         setAccountInfo({web3provider, signer, address, ensName, ensAvatar})
-                        initAccountChangeListener(web3provider)
+                        initAccountChangeListener(web3provider, signer)
                         setHasBeenCalled(true)
                     } else {
                         console.log('Please install a wallet!')
