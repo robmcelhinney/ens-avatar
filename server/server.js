@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import path from 'path'
 import Fastify from 'fastify'
 import axios from 'axios'
 import Moralis from "moralis"
@@ -52,9 +51,9 @@ export default ({ port }) => {
                 }
                 return null
             })
-        const { data } = await result
+        const { data } = await result || {}
         // malformed json
-        if (data.image == null) {
+        if (data  == null || data.image == null) {
             return null
         }
         let image = await replaceGateways(data.image)
@@ -62,16 +61,11 @@ export default ({ port }) => {
     }
 
     const replaceGateways = async (token_uri) => {
-        // console.log("replaceGateways token_uri: ", token_uri)
         if (token_uri.includes('/ipfs/')) {
-            // console.log("replaceGateways: ", token_uri)
-            return token_uri.replace(new RegExp(".*ipfs.*\/ipfs\/"), "https://cloudflare-ipfs.com/ipfs/")
+            return token_uri.replace(new RegExp(".*ipfs.*\/ipfs\/"), "https://ipfs.io/ipfs/")
         } else if (token_uri.includes('ipfs://')){
-            console.log("replaceGateways: ", token_uri)
-            console.log("includes ipfs://: ", token_uri.replace(new RegExp("ipfs:\/\/"), "https://cloudflare-ipfs.com/ipfs/"))
-            return token_uri.replace(new RegExp("ipfs:\/\/"), "https://cloudflare-ipfs.com/ipfs/")
+            return token_uri.replace(new RegExp("ipfs:\/\/"), "https://ipfs.io/ipfs/")
         } else {
-            // console.log("default")
             return token_uri
         }
     }
@@ -92,38 +86,43 @@ export default ({ port }) => {
 
     
     const getWalletNFTS = async (address, chain) => {
-        console.log("address: ", address)
-        console.log("chain: ", chain)
-        const response = await Moralis2.EvmApi.nft.getWalletNFTs({
-            address,
-            chain,
-        })
-        let nfts = response.data.result
-        for (let i=0; i < nfts.length; i++){
-            if ( nfts[i].token_uri == "Invalid uri" || nfts[i].token_uri == null) {
-                nfts.splice(i, 1)
-                i -= 1
-                continue
-            }
-            else {
-                console.log("nfts[i].token_uri: ", nfts[i].token_uri)
-                let image = await getImage(nfts[i].token_uri)
-                if (image == null) {
-                    nfts.splice(i, 1)
-                    i -= 1
-                    continue
+        try {
+            const response = await Moralis2.EvmApi.nft.getWalletNFTs({
+                address,
+                chain,
+            })
+            const {result} = response.data || {}
+            let nfts = result
+            if (nfts) {
+                for (let i=0; i < nfts.length; i++){
+                    if ( nfts[i].token_uri == "Invalid uri" || nfts[i].token_uri == null) {
+                        nfts.splice(i, 1)
+                        i -= 1
+                        continue
+                    }
+                    else {
+                        let image = await getImage(nfts[i].token_uri)
+                        if (image == null) {
+                            nfts.splice(i, 1)
+                            i -= 1
+                            continue
+                        }
+                        else{
+                            nfts[i].image = image
+                        }
+                    }
+                    if ( nfts[i].name == null && nfts[i].hasOwnProperty('metadata')) {
+                        let metadata = JSON.parse(nfts[i].metadata)
+                        nfts[i].name = metadata.name
+                    }
                 }
-                else{
-                    nfts[i].image = image
-                }
             }
-
-            if ( nfts[i].name == null && nfts[i].hasOwnProperty('metadata')) {
-                let metadata = JSON.parse(nfts[i].metadata)
-                nfts[i].name = metadata.name
-            }
+            return nfts
         }
-        return nfts
+        catch (e) {
+            console.error("oh my god, it broke!!!. error: ", e)
+        }
+        return null
     }
 
     // Run the server!
