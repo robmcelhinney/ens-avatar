@@ -10,7 +10,6 @@ export const useConnect = () => {
 
     const [hasBeenCalled, setHasBeenCalled] = useState(false)
 
-
     useEffect(() => {
         const connect = async () => {
             if (typeof window !== 'undefined') {
@@ -23,7 +22,7 @@ export const useConnect = () => {
                 }
 
                 const web3provider = new ethers.providers.Web3Provider(window.ethereum)
-        
+
                 if (!hasBeenCalled) {
                     if (web3provider) {
                         const signer = web3provider.getSigner()
