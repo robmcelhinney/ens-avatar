@@ -15,7 +15,7 @@ function Homepage() {
 
     const [accountInfo] = useGlobalState("accountInfo")
 
-    const {web3provider, address, ensName, ensAvatar} = accountInfo || {}
+    const {web3provider, signer, address, ensName, ensAvatar} = accountInfo || {}
 
     const getNFTs = async () => {
         if (typeof address !== "undefined") {
