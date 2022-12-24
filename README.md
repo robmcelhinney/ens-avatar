@@ -1,7 +1,6 @@
 # ENS Avatar | Set ENS Avatar from selecting owned NFTs
 
-Viewable at [http://ensavatar.robmcelhinney.com](
-http://ensavatar.robmcelhinney.com)
+Update - Website no longer online but can be run locally
 
 Website to set your ENS avatar based from your NFTs.
 
